@@ -150,7 +150,7 @@ public class MyPanel extends JPanel implements ActionListener{
 		snakeBody.draw(g);
 		
 		g.setFont(new Font("Timer Roman", Font.ITALIC, 25));
-		g.drawString("Score: " + score, screenW/2-30, 25);
+		g.drawString("Score: " + score, screenW/2-40, 25);
 	}
 	
 	public void update() {
@@ -162,11 +162,7 @@ public class MyPanel extends JPanel implements ActionListener{
 		 * First body will be moved
 		 * Second collisions will be checked
 		 * Third apple collision will be checked
-		 * 
-		 * After apple collision is checked, new body-part overlaps tail(body-part),
-		 * so, snake should be moved first before checking the collisions
-		 * This will move the tail by one unit and it will not overlap anymore
-		 * This will stop the game. */
+		 */
 	}
 	
 	@Override
