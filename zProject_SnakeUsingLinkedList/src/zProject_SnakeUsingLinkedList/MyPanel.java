@@ -16,20 +16,22 @@ public class MyPanel extends JPanel implements ActionListener{
 	static final int screenW = 600;
 	static final int screenH = 600;
 	
-	static final int unitSize = 25;
+	int delay = 200;
 	
-	static final int totalRows = screenW/unitSize;
-	static final int totalCols = screenH/unitSize;
+	private int score;
 	
 	char direction = 'R';
 	
+	Apple apple;
 	SnakeList snakeBody;
+	
+	boolean gameOver;
 	
 	Timer myTimer;
 	
 	MyPanel(){
 		initializePanel();
-		initializeBody();
+		initializeGame();
 		start();
 	}
 
@@ -37,12 +39,14 @@ public class MyPanel extends JPanel implements ActionListener{
 		this.setPreferredSize(new Dimension(screenW,screenH));
 		this.setFocusable(true);
 		this.setBackground(new Color(50,50,50));
-		
 		this.addKeyListener(new myKeyAdapter());
-		
 	}
 	
-	private void initializeBody() {
+	private void initializeGame() {
+		
+		apple = new Apple();
+		apple.setCord();
+		
 		snakeBody = new SnakeList();
 		snakeBody.addFront(new BodyPart(5,5));
 		snakeBody.addFront(new BodyPart(6,5));
@@ -53,32 +57,133 @@ public class MyPanel extends JPanel implements ActionListener{
 	}
 	
 	private void start() {
-		myTimer = new Timer(200,this);
+		myTimer = new Timer(delay,this);
+		gameOver = false;
 		myTimer.start();
 	}
 	
-	public void moveBody() {
-		snakeBody.move(direction);
+	private void checkApple(){
+		int appleX = apple.getX();
+		int appleY = apple.getY();
+		int snakeHeadX = snakeBody.getHead().bodypart.getX();
+		int snakeHeadY = snakeBody.getHead().bodypart.getY();
+		
+		if(appleX == snakeHeadX && appleY == snakeHeadY) {
+			apple.setCord();
+			addBodyPart();
+			score++;
+		}
+		
+	}
+	
+	private void addBodyPart() {
+		
+		// A complicated way to add body parts but this eliminates most of the bugs
+		// A body part will be added by checking the tails direction and movement 
+		
+		int snakeTailX = snakeBody.getTail().bodypart.getX();
+		int snakeTailY = snakeBody.getTail().bodypart.getY();
+		
+		int XDir = snakeBody.getTail().bodypart.getXDir();
+		int YDir = snakeBody.getTail().bodypart.getYDir();
+		
+		if(XDir==1 && YDir==0) {
+			snakeBody.addLast(new BodyPart(snakeTailX-XDir,snakeTailY-YDir));	
+		}
+		if(XDir==-1 && YDir==0) {
+			snakeBody.addLast(new BodyPart(snakeTailX-XDir,snakeTailY-YDir));
+		}
+		if(XDir==0 && YDir==1) {
+			snakeBody.addLast(new BodyPart(snakeTailX-XDir,snakeTailY-YDir));
+		}
+		if(XDir==0 && YDir==-1){
+			snakeBody.addLast(new BodyPart(snakeTailX-XDir,snakeTailY-YDir));
+		}
+		
+		// The code below will fix the bug when snake is reversed at the same time when body-part is added.
+		
+		snakeBody.getTail().bodypart.setXDir(snakeTailX);
+		snakeBody.getTail().bodypart.setYDir(snakeTailY);
+
+	}
+
+	private void checkCollisions() {
+		gameOver = snakeBody.checkCol();
+	}
+
+	private void reverse() {
+		//First we will change the directions so that we can use 
+		//Tail node to get directions and change directions accordingly
+		reverseDirections();
+		
+		//Secondly, reverse the snake's whole body
+		snakeBody.reverseList();
+	}
+
+	private void reverseDirections() {
+		
+		int x = snakeBody.getTail().bodypart.getXDir();
+		int y = snakeBody.getTail().bodypart.getYDir();
+		
+		if(x==1 && y==0) {
+			direction = 'L';
+			return;
+		}
+		if(x==-1 && y==0) {
+			direction = 'R';
+			return;
+		}
+		if(x==0 && y==1) {
+			direction = 'U';
+			return;
+		}
+		if(x==0 && y==-1){
+			direction = 'D';
+			return;
+		}
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setStroke(new BasicStroke(3));
-		snakeBody.draw(g2);
+		apple.draw(g);
+		snakeBody.draw(g);
+		
+		g.setFont(new Font("Timer Roman", Font.ITALIC, 25));
+		g.drawString("Score: " + score, screenW/2-30, 25);
 	}
 	
-	
-	
+	public void update() {
+		snakeBody.move(direction);
+		checkCollisions();
+		checkApple();
+		
+		/*
+		 * First body will be moved
+		 * Second collisions will be checked
+		 * Third apple collision will be checked
+		 * 
+		 * After apple collision is checked, new body-part overlaps tail(body-part),
+		 * so, snake should be moved first before checking the collisions
+		 * This will move the tail by one unit and it will not overlap anymore
+		 * This will stop the game. */
+	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		moveBody();
-		repaint();
+		if(!gameOver) {
+			update();
+			repaint();
+			return;
+		}
+		myTimer.stop();
 	}	
 	
+	
+	
+	
 	public class myKeyAdapter extends KeyAdapter{
+		
 		public void keyPressed(KeyEvent e) {
 			
 			switch(e.getKeyCode()) {
@@ -103,34 +208,11 @@ public class MyPanel extends JPanel implements ActionListener{
 				}
 				break;
 			case KeyEvent.VK_SPACE:
-				//First we will change the directions so that we can use Tail node to get directions and change directions accordingly
 				reverse();
-				snakeBody.reverseList();
 				break;	
-			}
-		
+			}	
 		}
 
-		private void reverse() {
-			
-			int x = snakeBody.getTail().bodypart.getXDir();
-			int y = snakeBody.getTail().bodypart.getYDir();
-			
-			if(x==1 && y==0) {
-				direction = 'L';
-			}
-			else if(x==-1 && y==0) {
-				direction = 'R';
-			}
-			else if(x==0 && y==1) {
-				direction = 'U';
-			}
-			else if(x==0 && y==-1){
-				direction = 'D';
-			}
-			
-		}
 	}
-
 	
 }

@@ -1,6 +1,8 @@
 package zProject_SnakeUsingLinkedList;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class SnakeList {
 	
@@ -46,15 +48,18 @@ public class SnakeList {
 //		
 //		Node temp = tail;
 //		
+//		System.out.print("X: ");
+//		
 //		while(temp!=null) {
-//			System.out.print("X " + tail.bodypart.xDir);
+//			System.out.print(tail.bodypart.getX() + " ");
 //			temp = temp.next;
 //		}
 //		System.out.println();
 //		
+//		System.out.print("Y: ");
 //		temp = tail;
 //		while(temp!=null) {
-//			System.out.print("Y " + tail.bodypart.yDir);
+//			System.out.print(tail.bodypart.getY() + " ");
 //			temp = temp.next;
 //		}
 //		System.out.println();
@@ -64,6 +69,9 @@ public class SnakeList {
 	public void draw(Graphics g) {
 		
 		Node temp = head;
+		
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setStroke(new BasicStroke(3));
 		
 		while(temp!=null) {
 			temp.bodypart.draw(g);
@@ -80,6 +88,7 @@ public class SnakeList {
 		int tempx2;
 		int tempy2;
 		
+		// Move the head node first and set the head's direction
 		switch (direction) {
 		case 'R': temp.bodypart.moveX(1);
 				  temp.bodypart.moveY(0);
@@ -97,6 +106,7 @@ public class SnakeList {
 		
 		temp = temp.next;
 		
+		// Move body by using the following node's position
 		while(temp!=null) {
 			tempx2 = temp.bodypart.getX();
 			tempy2 = temp.bodypart.getY();
@@ -138,8 +148,32 @@ public class SnakeList {
 		head = temp;
 	}
 	
+	public boolean checkCol() {
+		
+		Node temp = head;
+		
+		int headX = head.bodypart.getX();
+		int headY = head.bodypart.getY();
+		
+		temp = temp.next;
+		
+		while(temp!=null) {
+			if(temp.bodypart.getX() == headX && temp.bodypart.getY()==headY) {
+				System.out.println("Game Over");
+				return true;
+			}
+			temp = temp.next;
+		}
+		
+		return false;
+	}
+	
 	public Node getTail() {
 		return tail;
+	}
+	
+	public Node getHead() {
+		return head;
 	}
 	
 	

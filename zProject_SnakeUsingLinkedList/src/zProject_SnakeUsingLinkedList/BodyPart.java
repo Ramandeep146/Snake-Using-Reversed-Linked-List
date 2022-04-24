@@ -4,11 +4,11 @@ import java.awt.*;
 
 public class BodyPart{
 	
-	int unitSize = 25;
+	private int unitSize = 25;
 	
-	int x,y;
+	private int x,y;
 	
-	int xDir,yDir;
+	private int xDir,yDir;
 	
 	BodyPart(int x, int y){
 		this.x = x;
@@ -43,7 +43,6 @@ public class BodyPart{
 	}
 	
 	public void setX(int x) {
-		this.xDir = x - this.x;
 		this.x = x;
 	}
 	
@@ -52,7 +51,6 @@ public class BodyPart{
 	}
 	
 	public void setY(int y) {
-		this.yDir = y - this.y;
 		this.y = y;
 	}
 
