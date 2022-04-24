@@ -13,6 +13,7 @@ public class MyFrame extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.add(new MyPanel());
 		this.pack();
+		//this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}

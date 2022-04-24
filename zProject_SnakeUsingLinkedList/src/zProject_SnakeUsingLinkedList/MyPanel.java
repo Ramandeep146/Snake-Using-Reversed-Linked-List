@@ -16,11 +16,15 @@ public class MyPanel extends JPanel implements ActionListener{
 	static final int screenW = 600;
 	static final int screenH = 600;
 	
-	int delay = 200;
+	static final int unitSize = 25;
+	static final int totalRows = screenW/unitSize;
+	static final int totalCols = screenH/unitSize;
+	
+	int delay = 100;
 	
 	private int score;
 	
-	char direction = 'R';
+	char direction;
 	
 	Apple apple;
 	SnakeList snakeBody;
@@ -31,15 +35,19 @@ public class MyPanel extends JPanel implements ActionListener{
 	
 	MyPanel(){
 		initializePanel();
-		initializeGame();
-		start();
+		reset();
 	}
-
+	
 	private void initializePanel() {
 		this.setPreferredSize(new Dimension(screenW,screenH));
 		this.setFocusable(true);
 		this.setBackground(new Color(50,50,50));
 		this.addKeyListener(new myKeyAdapter());
+	}
+	
+	public void reset(){
+		initializeGame();
+		start();
 	}
 	
 	private void initializeGame() {
@@ -54,6 +62,9 @@ public class MyPanel extends JPanel implements ActionListener{
 		snakeBody.addFront(new BodyPart(8,5));
 		snakeBody.addLast(new BodyPart(4,5));
 		snakeBody.addLast(new BodyPart(3,5));
+		
+		direction = 'R';
+		score = 0;
 	}
 	
 	private void start() {
@@ -79,7 +90,7 @@ public class MyPanel extends JPanel implements ActionListener{
 	private void addBodyPart() {
 		
 		// A complicated way to add body parts but this eliminates most of the bugs
-		// A body part will be added by checking the tails direction and movement 
+		// A body part will be added behind the tail by checking the tails direction and movement 
 		
 		int snakeTailX = snakeBody.getTail().bodypart.getX();
 		int snakeTailY = snakeBody.getTail().bodypart.getY();
@@ -100,10 +111,9 @@ public class MyPanel extends JPanel implements ActionListener{
 			snakeBody.addLast(new BodyPart(snakeTailX-XDir,snakeTailY-YDir));
 		}
 		
-		// The code below will fix the bug when snake is reversed at the same time when body-part is added.
-		
-		snakeBody.getTail().bodypart.setXDir(snakeTailX);
-		snakeBody.getTail().bodypart.setYDir(snakeTailY);
+		//**The code below will fix the bug when snake is reversed at the same time when body-part is added.**//
+		snakeBody.getTail().bodypart.setXDir(XDir);
+		snakeBody.getTail().bodypart.setYDir(YDir);
 
 	}
 
@@ -143,18 +153,8 @@ public class MyPanel extends JPanel implements ActionListener{
 		}
 	}
 	
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		apple.draw(g);
-		snakeBody.draw(g);
-		
-		g.setFont(new Font("Timer Roman", Font.ITALIC, 25));
-		g.drawString("Score: " + score, screenW/2-40, 25);
-	}
-	
 	public void update() {
-		snakeBody.move(direction);
+		snakeBody.moveSnakeList(direction,totalRows,totalCols);
 		checkCollisions();
 		checkApple();
 		
@@ -175,9 +175,39 @@ public class MyPanel extends JPanel implements ActionListener{
 		myTimer.stop();
 	}	
 	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		apple.draw(g);
+		snakeBody.draw(g);
+		drawScore(g);
+		
+		if(gameOver) {
+			drawGameOver(g);
+		}
+	}
 	
 	
-	
+	private void drawScore(Graphics g) {
+		g.setColor(Color.RED);
+		g.setFont(new Font("Timer Roman", Font.ITALIC, 25));
+		FontMetrics metrics = getFontMetrics(g.getFont());
+		g.drawString("Score: " + score, screenW/2 - metrics.stringWidth("Score: " + score )/2, 25);
+	}
+
+	private void drawGameOver(Graphics g) {
+		g.setColor(Color.RED);
+		g.setFont(new Font("Timer Roman", Font.ITALIC, 50));
+		FontMetrics metrics = getFontMetrics(g.getFont());
+		g.drawString("GameOver", 
+				screenW/2 - metrics.stringWidth(" GameOver")/2, screenH/2-50);
+		g.drawString("Your Score: " + score, 
+				screenW/2 - metrics.stringWidth("Your Score: " + score)/2, screenH/2);
+		g.drawString("Press 'R' to restart", 
+				screenW/2 - metrics.stringWidth("Press 'R' to restart")/2, screenH/2 + 50);
+		
+	}
+
 	public class myKeyAdapter extends KeyAdapter{
 		
 		public void keyPressed(KeyEvent e) {
@@ -206,6 +236,11 @@ public class MyPanel extends JPanel implements ActionListener{
 			case KeyEvent.VK_SPACE:
 				reverse();
 				break;	
+			case KeyEvent.VK_R:
+				if(gameOver) {
+					reset();
+				}
+				break;
 			}	
 		}
 

@@ -43,7 +43,8 @@ public class SnakeList {
 		bodySize++;
 		
 	}
-	
+
+//  Checking if tail's coordinates were correct or not	
 //	public void display() {
 //		
 //		Node temp = tail;
@@ -73,13 +74,29 @@ public class SnakeList {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(3));
 		
+		head.bodypart.drawHead(g);
+		
 		while(temp!=null) {
-			temp.bodypart.draw(g);
+			temp.bodypart.drawBody(g2);
 			temp = temp.next;
 		}
 	}
 	
-	public void move(char direction) {
+	public void moveSnakeList(char direction, int totalrows, int totalcols) {
+		
+		/* A simple way to move the snake
+		 * 
+		 * First head is moved and then it direction is set
+		 *     - If the head wraps around, it is moved to a wrapped around coordinate
+		 *     - The "wrapAroundHead()" method is used
+		 *     
+		 * Second, using the head's previous coordinates, each body-part is moved and their directions are updated
+		 *     - ****IMPORTANT****
+		 *       If the head wraps around, the tail follows as well and it also wraps around but it causes 
+		 *       problem in its direction. If I change the direction of the snake right when the tail gets 
+		 *       wrapped around the game board, game glitches      
+		 * 	   - To reset the tails directions, "wrapTailDirection()" method is used
+		 * */
 		
 		Node temp = head;
 		
@@ -88,7 +105,6 @@ public class SnakeList {
 		int tempx2;
 		int tempy2;
 		
-		// Move the head node first and set the head's direction
 		switch (direction) {
 		case 'R': temp.bodypart.moveX(1);
 				  temp.bodypart.moveY(0);
@@ -102,28 +118,72 @@ public class SnakeList {
 		case 'D': temp.bodypart.moveY(1);
 				  temp.bodypart.moveX(0);
 		break;		
-		}	
+		}
+		
+		wrapAroundHead(totalrows,totalcols);
 		
 		temp = temp.next;
 		
-		// Move body by using the following node's position
 		while(temp!=null) {
+			
 			tempx2 = temp.bodypart.getX();
 			tempy2 = temp.bodypart.getY();
 			
-			temp.bodypart.setXDir(tempx1);
-			temp.bodypart.setYDir(tempy1);
 			temp.bodypart.setX(tempx1);
 			temp.bodypart.setY(tempy1);
+			
+			temp.bodypart.setXDir(tempx1-tempx2);
+			temp.bodypart.setYDir(tempy1-tempy2);
 			
 			tempx1 = tempx2;
 			tempy1 = tempy2;
 			
 			temp = temp.next;
 		}
+	
+		wrapTailDirections(totalrows,totalcols);
+		
 		//display();
 	}
+
+	private void wrapAroundHead(int totalrows, int totalcols) {
+		if(head.bodypart.getX() < 0) {
+			head.bodypart.setX(totalrows - 1);
+			return;
+		}
+		if(head.bodypart.getX() > totalrows - 1) {
+			head.bodypart.setX(0);
+			return;
+		}
+		if(head.bodypart.getY() < 0) {
+			head.bodypart.setY(totalcols - 1);
+			return;
+		}
+		if(head.bodypart.getY() > totalcols - 1) {
+			head.bodypart.setY(0);
+			return;
+		}
+	}
 	
+	private void wrapTailDirections(int totalrows, int totalcols) {
+		if(tail.bodypart.getXDir()<-1) {
+			tail.bodypart.setXDir(+1);
+			return;
+		}
+		if(tail.bodypart.getXDir()>1) {
+			tail.bodypart.setXDir(-1);
+			return;
+		}
+		if(tail.bodypart.getYDir()<-1) {
+			tail.bodypart.setYDir(+1);
+			return;
+		}
+		if(tail.bodypart.getYDir()>1) {
+			tail.bodypart.setYDir(-1);
+			return;
+		}
+	}
+
 	public void reverseList() {
 		
 		Node temp = head;
@@ -140,7 +200,7 @@ public class SnakeList {
 				tailReversed = true;
 			 }
 			 prevN = temp;
-			 temp = nextN; 
+			 temp = nextN;
 		}
 		
 		temp = prevN;
@@ -159,7 +219,6 @@ public class SnakeList {
 		
 		while(temp!=null) {
 			if(temp.bodypart.getX() == headX && temp.bodypart.getY()==headY) {
-				System.out.println("Game Over");
 				return true;
 			}
 			temp = temp.next;

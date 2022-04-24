@@ -15,9 +15,15 @@ public class BodyPart{
 		this.y = y;
 	}
 	
-	public void draw(Graphics g) {
-		g.setColor(Color.RED);
+	public void drawBody(Graphics g) {
+		
+		g.setColor(Color.GREEN);
 		g.drawRect(x*unitSize,y*unitSize,unitSize,unitSize);
+	}
+	
+	public void drawHead(Graphics g) {
+		g.setColor(Color.GREEN);
+		g.fillRect(x*unitSize,y*unitSize,unitSize,unitSize);
 	}
 	
 	public void moveX(int xdir) {
@@ -38,16 +44,16 @@ public class BodyPart{
 		return y;
 	}
 	
-	public void setXDir(int x) {
-		this.xDir = x-this.x;
+	public void setXDir(int xdir) {
+		this.xDir = xdir;
 	}
 	
 	public void setX(int x) {
 		this.x = x;
 	}
 	
-	public void setYDir(int y) {
-		this.yDir = y-this.y;
+	public void setYDir(int ydir) {
+		this.yDir = ydir;
 	}
 	
 	public void setY(int y) {
@@ -60,6 +66,10 @@ public class BodyPart{
 	
 	public int getYDir() {
 		return yDir;
+	}
+	
+	public int getUnitSize() {
+		return unitSize;
 	}
 
 }
