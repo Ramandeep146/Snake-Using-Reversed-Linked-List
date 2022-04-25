@@ -13,25 +13,25 @@ public class MyPanel extends JPanel implements ActionListener{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	static final int screenW = 600;
-	static final int screenH = 600;
+	private final int screenW = 800;
+	private final int screenH = 600;
 	
-	static final int unitSize = 25;
-	static final int totalRows = screenW/unitSize;
-	static final int totalCols = screenH/unitSize;
+	private final int unitSize = 25;
+	private final int totalRows = screenW/unitSize;
+	private final int totalCols = screenH/unitSize;
 	
-	int delay = 100;
+	private int delay = 100;
 	
 	private int score;
 	
-	char direction;
+	private char direction;
 	
-	Apple apple;
-	SnakeList snakeBody;
+	private Apple apple;
+	private SnakeList snakeBody;
 	
-	boolean gameOver;
+	private boolean gameOver;
 	
-	Timer myTimer;
+	private Timer myTimer;
 	
 	MyPanel(){
 		initializePanel();
@@ -45,7 +45,7 @@ public class MyPanel extends JPanel implements ActionListener{
 		this.addKeyListener(new myKeyAdapter());
 	}
 	
-	public void reset(){
+	private void reset(){
 		initializeGame();
 		start();
 	}
@@ -53,15 +53,15 @@ public class MyPanel extends JPanel implements ActionListener{
 	private void initializeGame() {
 		
 		apple = new Apple();
-		apple.setCord();
+		apple.setCord(totalRows,totalCols);
 		
 		snakeBody = new SnakeList();
 		snakeBody.addFront(new BodyPart(5,5));
 		snakeBody.addFront(new BodyPart(6,5));
-		snakeBody.addFront(new BodyPart(7,5));
-		snakeBody.addFront(new BodyPart(8,5));
-		snakeBody.addLast(new BodyPart(4,5));
-		snakeBody.addLast(new BodyPart(3,5));
+//		snakeBody.addFront(new BodyPart(7,5));
+//		snakeBody.addFront(new BodyPart(8,5));
+//		snakeBody.addLast(new BodyPart(4,5));
+//		snakeBody.addLast(new BodyPart(3,5));
 		
 		direction = 'R';
 		score = 0;
@@ -73,6 +73,32 @@ public class MyPanel extends JPanel implements ActionListener{
 		myTimer.start();
 	}
 	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(!gameOver) {
+			update();
+			repaint();
+			return;
+		}
+		myTimer.stop();
+	}
+	
+	private void update() {
+		snakeBody.moveSnakeList(direction,totalRows,totalCols);
+		checkCollisions();
+		checkApple();
+		
+		/*
+		 * First body will be moved
+		 * Second collisions will be checked
+		 * Third apple collision will be checked
+		 */
+	}
+	
+	private void checkCollisions() {
+		gameOver = snakeBody.checkCol();
+	}
+	
 	private void checkApple(){
 		int appleX = apple.getX();
 		int appleY = apple.getY();
@@ -80,9 +106,9 @@ public class MyPanel extends JPanel implements ActionListener{
 		int snakeHeadY = snakeBody.getHead().bodypart.getY();
 		
 		if(appleX == snakeHeadX && appleY == snakeHeadY) {
-			apple.setCord();
+			apple.setCord(totalRows,totalCols);
 			addBodyPart();
-			score++;
+			score+=5;
 		}
 		
 	}
@@ -116,65 +142,8 @@ public class MyPanel extends JPanel implements ActionListener{
 		snakeBody.getTail().bodypart.setYDir(YDir);
 
 	}
-
-	private void checkCollisions() {
-		gameOver = snakeBody.checkCol();
-	}
-
-	private void reverse() {
-		//First we will change the directions so that we can use 
-		//Tail node to get directions and change directions accordingly
-		reverseDirections();
 		
-		//Secondly, reverse the snake's whole body
-		snakeBody.reverseList();
-	}
-
-	private void reverseDirections() {
-		
-		int x = snakeBody.getTail().bodypart.getXDir();
-		int y = snakeBody.getTail().bodypart.getYDir();
-		
-		if(x==1 && y==0) {
-			direction = 'L';
-			return;
-		}
-		if(x==-1 && y==0) {
-			direction = 'R';
-			return;
-		}
-		if(x==0 && y==1) {
-			direction = 'U';
-			return;
-		}
-		if(x==0 && y==-1){
-			direction = 'D';
-			return;
-		}
-	}
-	
-	public void update() {
-		snakeBody.moveSnakeList(direction,totalRows,totalCols);
-		checkCollisions();
-		checkApple();
-		
-		/*
-		 * First body will be moved
-		 * Second collisions will be checked
-		 * Third apple collision will be checked
-		 */
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(!gameOver) {
-			update();
-			repaint();
-			return;
-		}
-		myTimer.stop();
-	}	
-	
+ 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -206,6 +175,38 @@ public class MyPanel extends JPanel implements ActionListener{
 		g.drawString("Press 'R' to restart", 
 				screenW/2 - metrics.stringWidth("Press 'R' to restart")/2, screenH/2 + 50);
 		
+	}
+	
+	private void reverse() {
+		//First we will change the directions so that we can use 
+		//Tail node to get directions and change directions accordingly
+		reverseDirections();
+		
+		//Secondly, reverse the snake's whole body
+		snakeBody.reverseList();
+	}
+
+	private void reverseDirections() {
+		
+		int x = snakeBody.getTail().bodypart.getXDir();
+		int y = snakeBody.getTail().bodypart.getYDir();
+		
+		if(x==1 && y==0) {
+			direction = 'L';
+			return;
+		}
+		if(x==-1 && y==0) {
+			direction = 'R';
+			return;
+		}
+		if(x==0 && y==1) {
+			direction = 'U';
+			return;
+		}
+		if(x==0 && y==-1){
+			direction = 'D';
+			return;
+		}
 	}
 
 	public class myKeyAdapter extends KeyAdapter{

@@ -86,7 +86,7 @@ public class SnakeList {
 		
 		/* A simple way to move the snake
 		 * 
-		 * First head is moved and then it direction is set
+		 * First head is moved and then its direction is set
 		 *     - If the head wraps around, it is moved to a wrapped around coordinate
 		 *     - The "wrapAroundHead()" method is used
 		 *     

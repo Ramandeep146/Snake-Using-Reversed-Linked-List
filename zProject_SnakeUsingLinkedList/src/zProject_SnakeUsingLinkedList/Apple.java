@@ -9,16 +9,16 @@ public class Apple {
 	
 	private int x,y;
 	
-	Random random;
+	private Random random;
 	
 	Apple(){
 		unitSize = 25;
 		random = new Random();
 	}
 	
-	public void setCord() {
-		x = random.nextInt(unitSize-1);
-		y = random.nextInt(unitSize-1);
+	public void setCord(int totalrows, int totalcols) {
+		x = random.nextInt(totalrows-1);
+		y = random.nextInt(totalcols-1);
 	}
 	
 	public void draw(Graphics g) {

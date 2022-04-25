@@ -10,9 +10,9 @@ public class Node {
 		this.next = null;
 	}
 	
-	Node(Node next, BodyPart bodypart){
-		this.bodypart = bodypart;
-		this.next = next;
-	}
+//	Node(Node next, BodyPart bodypart){
+//		this.bodypart = bodypart;
+//		this.next = next;
+//	}
 
 }

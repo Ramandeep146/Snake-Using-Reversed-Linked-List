@@ -4,13 +4,14 @@ import java.awt.*;
 
 public class BodyPart{
 	
-	private int unitSize = 25;
+	private int unitSize;
 	
 	private int x,y;
 	
 	private int xDir,yDir;
 	
 	BodyPart(int x, int y){
+		unitSize = 25;
 		this.x = x;
 		this.y = y;
 	}
