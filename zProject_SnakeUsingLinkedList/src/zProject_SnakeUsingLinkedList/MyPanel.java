@@ -97,6 +97,7 @@ public class MyPanel extends JPanel implements ActionListener{
 		 * Third apple collision will be checked
 		 */
 		
+		// Only after Move
 		// Changing this variable to true so that we can change the direction again
 		changeDirection = true;
 	}
