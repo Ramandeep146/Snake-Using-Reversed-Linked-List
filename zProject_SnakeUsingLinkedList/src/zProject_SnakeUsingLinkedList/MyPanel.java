@@ -31,6 +31,8 @@ public class MyPanel extends JPanel implements ActionListener{
 	
 	private boolean gameOver;
 	
+	private boolean changeDirection; // This variable will allow us to avoid multiple key inputs
+	
 	private Timer myTimer;
 	
 	MyPanel(){
@@ -63,6 +65,7 @@ public class MyPanel extends JPanel implements ActionListener{
 //		snakeBody.addLast(new BodyPart(4,5));
 //		snakeBody.addLast(new BodyPart(3,5));
 		
+		changeDirection = true;
 		direction = 'R';
 		score = 0;
 	}
@@ -93,6 +96,9 @@ public class MyPanel extends JPanel implements ActionListener{
 		 * Second collisions will be checked
 		 * Third apple collision will be checked
 		 */
+		
+		// Changing this variable to true so that we can change the direction again
+		changeDirection = true;
 	}
 	
 	private void checkCollisions() {
@@ -213,6 +219,10 @@ public class MyPanel extends JPanel implements ActionListener{
 		
 		public void keyPressed(KeyEvent e) {
 			
+			if(!changeDirection) {
+				return;
+			}
+			
 			switch(e.getKeyCode()) {
 			case KeyEvent.VK_DOWN:
 				if(direction != 'U') {
@@ -242,7 +252,12 @@ public class MyPanel extends JPanel implements ActionListener{
 					reset();
 				}
 				break;
-			}	
+			}
+			
+			// After first key pressed, it will be set to false until the snake moves by one unit
+			if(!gameOver) {
+				changeDirection = false;
+			}
 		}
 
 	}
