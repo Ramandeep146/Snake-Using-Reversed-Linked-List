@@ -1,5 +1,5 @@
 # Snake-Using-Reversed-Linked-List
-My own version of snake game using Singly Linked List
+My own version of snake game using Singly Linked List in which the player can reverse the movement of the snake.
 
 Controls:
 
