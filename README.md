@@ -1,8 +1,8 @@
 # Snake-Using-Reversed-Linked-List
 My own version of classic 2d snake game in which the snake grows by 1 size after eating an apple. The player can also reverse the snake’s direction anytime i.e., the head becomes the tail, and the tail becomes the head.  
 
-- Implemented singly linked list to store the body of snake.
-- Reverse the snake by reversing the linked list.
+- Created customized singly linked list data structure to store the body of snake.
+- Implemented reversing the snake by reversing the linked list.
 
 
 
